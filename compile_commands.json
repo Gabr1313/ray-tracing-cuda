@@ -1,0 +1,172 @@
+[
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/algebra.o",
+      "src/algebra.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/algebra.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/algebra.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/camera.o",
+      "src/camera.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/camera.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/camera.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/draw.o",
+      "src/draw.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/draw.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/draw.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/main.o",
+      "src/main.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/main.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/main.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/object.o",
+      "src/object.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/object.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/object.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/plane.o",
+      "src/plane.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/plane.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/plane.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/ray.o",
+      "src/ray.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/ray.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/ray.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/scanner.o",
+      "src/scanner.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/scanner.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/scanner.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/sphere.o",
+      "src/sphere.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/sphere.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/sphere.o"
+  },
+  {
+    "arguments": [
+      "/opt/cuda/bin/nvcc",
+      "-dc",
+      "-std=c++11",
+      "-g",
+      "-G",
+      "-O0",
+      "-c",
+      "-o",
+      "obj/triangle.o",
+      "src/triangle.cu"
+    ],
+    "directory": "/home/gabri/projects/cuda/ray-tracer-c",
+    "file": "/home/gabri/projects/cuda/ray-tracer-c/src/triangle.cu",
+    "output": "/home/gabri/projects/cuda/ray-tracer-c/obj/triangle.o"
+  }
+]
