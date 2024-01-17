@@ -64,9 +64,6 @@ void shoot_and_draw(const InputData* input_data) {
 	cudaMemcpy(pixel_sum, pixel_sum_cuda, sizeof(Float3) * total_pixels,
 			   cudaMemcpyDeviceToHost);
 
-	printf("%d - %f %f %f\n", 0, pixel_sum[0].x, pixel_sum[0].y,
-		   pixel_sum[0].z);
-
 	const float to_multiply = 255.0f / (number_of_updates * ray_per_pixel);
 	unsigned char* buffer =
 		(unsigned char*)malloc(content_len * sizeof(unsigned char));
@@ -80,7 +77,6 @@ void shoot_and_draw(const InputData* input_data) {
 		buffer[j++] = local_min(pixel_sum[i].y * to_multiply, 255);
 		buffer[j++] = local_min(pixel_sum[i].z * to_multiply, 255);
 	}
-	printf("%d - %d %d %d\n", 0, buffer[0], buffer[1], buffer[2]);
 
 	char header[64];
 	sprintf(header, "P6\n%d %d\n255\n", width, height);
