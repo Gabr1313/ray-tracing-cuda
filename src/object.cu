@@ -23,6 +23,16 @@ Object object_new(const int shape_type, const Shape* shape, const Float3* color,
 
 __device__ __host__ float object_intersect_distance(const Object* object,
 													const Ray3* ray) {
+	// switch (object->shape_type) {
+	// 	case TYPE_SPHERE:
+	// 		return sphere_intersect_distance(&object->shape, ray);
+	// 	case TYPE_PLANE:
+	// 		return plane_intersect_distance(&object->shape, ray);
+	// 	case TYPE_TRIANGLE:
+	// 		return triangle_intersect_distance(&object->shape, ray);
+	// }
+	// return -1;
+
 	if (object->shape_type == TYPE_SPHERE) {
 		return sphere_intersect_distance(&object->shape, ray);
 	} else if (object->shape_type == TYPE_PLANE) {
@@ -35,6 +45,17 @@ __device__ __host__ float object_intersect_distance(const Object* object,
 __device__ __host__ Float3 object_normal_normalized(const Object* object,
 													const Ray3* ray) {
 	Float3 direction;
+
+	// switch (object->shape_type) {
+	// 	case TYPE_SPHERE:
+	// 		direction = sphere_normal_normalized(&object->shape, &ray->origin);
+	// 	case TYPE_PLANE:
+	// 		direction = plane_normal_normalized(&object->shape, &ray->origin);
+	// 	case TYPE_TRIANGLE:
+	// 		direction =
+	// 			triangle_normal_normalized(&object->shape, &ray->origin);
+	// }
+
 	if (object->shape_type == TYPE_SPHERE)
 		direction = sphere_normal_normalized(&object->shape, &ray->origin);
 	else if (object->shape_type == TYPE_PLANE)

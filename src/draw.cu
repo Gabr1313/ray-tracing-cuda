@@ -13,7 +13,7 @@
 #include "ray.cuh"
 #include "scanner.cuh"
 
-__global__ void shoot(const InputData* input_data, Float3* pixel_sum,
+__global__ void shoot(const InputData* input_data, unsigned char* buffer,
 					  Object* object_ptr);
 
 __device__ __host__ int local_min(float a, float b) {
@@ -23,33 +23,26 @@ __device__ __host__ int local_min(float a, float b) {
 void shoot_and_draw(const InputData* input_data) {
 	const int width = input_data->camera.width;
 	const int height = input_data->camera.height;
-	const int number_of_updates = input_data->number_of_updates;
 	const int total_pixels = width * height;
-	const int ray_per_pixel = input_data->camera.sqrt_ray_per_pixel *
-							  input_data->camera.sqrt_ray_per_pixel;
 	const int content_len = total_pixels * 3;
 	const Object* object_ptr = input_data->objects.ptr;
 
 	InputData* input_data_cuda;
-	Float3* pixel_sum = (Float3*)calloc(width * height, sizeof(Float3));
-	Float3* pixel_sum_cuda;
+
+	unsigned char* buffer =
+		(unsigned char*)malloc(content_len * sizeof(unsigned char));
+	unsigned char* buffer_cuda;
 	Object* object_ptr_cuda;
 	cudaMalloc((void**)&input_data_cuda, sizeof(InputData));
-	cudaMalloc((void**)&pixel_sum_cuda, sizeof(Float3) * total_pixels);
+	cudaMalloc((void**)&buffer_cuda, content_len * sizeof(unsigned char));
 	cudaMalloc((void**)&object_ptr_cuda,
 			   sizeof(Object) * input_data->objects.size);
-	if (pixel_sum_cuda == NULL) {
-		fprintf(stderr, "Error: can't allocate GPU memory for input_data\n");
-		exit(-1);
-	}
-	if (pixel_sum_cuda == NULL) {
-		fprintf(stderr, "Error: can't allocate GPU memory for %d pixel\n",
-				total_pixels);
+	if (buffer_cuda == NULL || input_data_cuda == NULL ||
+		object_ptr_cuda == NULL) {
+		fprintf(stderr, "Error: can't allocate GPU memory.\n");
 		exit(-1);
 	}
 	cudaMemcpy(input_data_cuda, input_data, sizeof(InputData),
-			   cudaMemcpyHostToDevice);
-	cudaMemcpy(pixel_sum_cuda, pixel_sum, sizeof(Float3) * total_pixels,
 			   cudaMemcpyHostToDevice);
 	cudaMemcpy(object_ptr_cuda, object_ptr,
 			   sizeof(Object) * input_data->objects.size,
@@ -57,26 +50,13 @@ void shoot_and_draw(const InputData* input_data) {
 
 	int threads = 256;
 	int blocks = (total_pixels + threads - 1) / threads;
-	shoot<<<blocks, threads>>>(input_data_cuda, pixel_sum_cuda,
-							   object_ptr_cuda);
-	cudaDeviceSynchronize();
-
-	cudaMemcpy(pixel_sum, pixel_sum_cuda, sizeof(Float3) * total_pixels,
+	shoot<<<blocks, threads>>>(input_data_cuda, buffer_cuda, object_ptr_cuda);
+	// cudaDeviceSynchronize();
+	cudaFree(input_data_cuda);
+	cudaFree(object_ptr_cuda);
+	cudaMemcpy(buffer, buffer_cuda, content_len * sizeof(unsigned char),
 			   cudaMemcpyDeviceToHost);
-
-	const float to_multiply = 255.0f / (number_of_updates * ray_per_pixel);
-	unsigned char* buffer =
-		(unsigned char*)malloc(content_len * sizeof(unsigned char));
-	if (pixel_sum == NULL) {
-		fprintf(stderr, "Error: can't allocate memory for %d pixel\n",
-				width * height);
-		exit(-1);
-	}
-	for (int i = 0, j = 0; i < total_pixels; i++) {
-		buffer[j++] = local_min(pixel_sum[i].x * to_multiply, 255);
-		buffer[j++] = local_min(pixel_sum[i].y * to_multiply, 255);
-		buffer[j++] = local_min(pixel_sum[i].z * to_multiply, 255);
-	}
+	cudaFree(buffer_cuda);
 
 	char header[64];
 	sprintf(header, "P6\n%d %d\n255\n", width, height);
@@ -85,15 +65,14 @@ void shoot_and_draw(const InputData* input_data) {
 	fwrite(buffer, sizeof(unsigned char), content_len, stdout);
 
 	free(buffer);
-	free(pixel_sum);
 	free(input_data->objects.ptr);
 }
 
-__global__ void shoot(const InputData* input_data, Float3* pixel_sum,
+__global__ void shoot(const InputData* input_data, unsigned char* buffer,
 					  Object* object_ptr) {
 	const int width = input_data->camera.width;
 	const int height = input_data->camera.height;
-	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	const int number_of_updates = input_data->number_of_updates;
 	const int number_of_objects = input_data->objects.size;
 	if (idx >= width * height) return;
@@ -116,6 +95,7 @@ __global__ void shoot(const InputData* input_data, Float3* pixel_sum,
 	float3_add_eq(&ray.direction, &diff_y);
 	float3_add_eq(&ray.direction, &diff_x);
 
+	Float3 color_sum = float3_new(0, 0, 0);
 	Float3 starting_direction_y = ray.direction;
 	for (int ii = 0; ii < sqrt_ray_per_pixel; ii++) {
 		ray.direction = starting_direction_y;
@@ -123,12 +103,19 @@ __global__ void shoot(const InputData* input_data, Float3* pixel_sum,
 			for (int nou = 0; nou < number_of_updates; nou++) {
 				Float3 light = trace_ray(&ray, object_ptr, number_of_objects,
 										 max_bounces, background, &state);
-				float3_add_eq(&pixel_sum[idx], &light);
+				float3_add_eq(&color_sum, &light);
 			}
 			float3_add_eq(&ray.direction, d_x);
 		}
 		float3_add_eq(&starting_direction_y, d_y);
 	}
+
+	idx *= 3;
+	const float to_multiply =
+		255.0f / (number_of_updates * sqrt_ray_per_pixel * sqrt_ray_per_pixel);
+	buffer[idx] = local_min(color_sum.x * to_multiply, 255);
+	buffer[++idx] = local_min(color_sum.y * to_multiply, 255);
+	buffer[++idx] = local_min(color_sum.z * to_multiply, 255);
 }
 
 __device__ Float3 trace_ray(const Ray3* ray, const Object* object_ptr,
