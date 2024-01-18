@@ -27,9 +27,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cu $(HEADERS)
 $(EXECUTABLE): $(OBJECTS)
 	$(NVCC) $(OBJECTS) -o $@
 
+.PHONY: dir
+dir:
+	dir -p $(OBJ_DIR) $(BIN_DIR)
+
 .PHONY: clean
 clean:
-	rm -f $(OBJ_DIR)/*.o
+	rm -f $(OBJ_DIR)/*.o $(BIN_DIR)/*
 
 run: $(EXECUTABLE)
 	./$(EXECUTABLE) <input.txt >draw.ppm

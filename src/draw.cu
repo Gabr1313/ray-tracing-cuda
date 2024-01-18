@@ -116,18 +116,18 @@ __global__ void shoot(const InputData* input_data, Float3* pixel_sum,
 	float3_add_eq(&ray.direction, &diff_y);
 	float3_add_eq(&ray.direction, &diff_x);
 
-	Float3 starting_direction = ray.direction;
-	for (int nou = 0; nou < number_of_updates; nou++) {
-		for (int ii = 0; ii < sqrt_ray_per_pixel; ii++) {
-			ray.direction = starting_direction;
-			for (int jj = 0; jj < sqrt_ray_per_pixel; jj++) {
+	Float3 starting_direction_y = ray.direction;
+	for (int ii = 0; ii < sqrt_ray_per_pixel; ii++) {
+		ray.direction = starting_direction_y;
+		for (int jj = 0; jj < sqrt_ray_per_pixel; jj++) {
+			for (int nou = 0; nou < number_of_updates; nou++) {
 				Float3 light = trace_ray(&ray, object_ptr, number_of_objects,
 										 max_bounces, background, &state);
 				float3_add_eq(&pixel_sum[idx], &light);
-				float3_add_eq(&ray.direction, d_x);
 			}
-			float3_add_eq(&starting_direction, d_y);
+			float3_add_eq(&ray.direction, d_x);
 		}
+		float3_add_eq(&starting_direction_y, d_y);
 	}
 }
 
